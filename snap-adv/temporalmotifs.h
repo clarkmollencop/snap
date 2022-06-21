@@ -98,6 +98,10 @@ class TempMotifCounter {
   //    source_node destination_node unix_timestamp
   TempMotifCounter(const TStr& filename);
 
+  // method to duplicate edges for counting motifs across the period of a periodic graph
+  // it duplicates edges until and including period + delta 
+  void DuplicateEdges(const int& delta, const int& period);
+
   // Count all three temporal edge, two-node delta-temporal motifs and fills the
   // counter counts with the results.  The format is:
   //   counts(0, 0): u --> v, v --> u, u --> v  (M_{5,1})

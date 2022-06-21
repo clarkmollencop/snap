@@ -30,7 +30,11 @@ int main(int argc, char* argv[]) {
 
   // Count all 2-node and 3-node temporal motifs with 3 temporal edges
   TempMotifCounter tmc(temporal_graph_filename);
+  tmc.DuplicateEdges(4, 12);
+
   Counter2D counts;
+  // add the duplicated edges here maybe
+  
   tmc.Count3TEdge23Node(delta, counts);
   FILE* output_file = fopen(output.CStr(), "wt");
   for (int i = 0; i < counts.m(); i++) {

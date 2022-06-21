@@ -55,6 +55,18 @@ void TempMotifCounter::GetAllNeighbors(int node, TIntV& nbrs) {
   }
 }
 
+void TempMotifCounter::DuplicateEdges(const int& delta, const int& period){
+  // do edge duplication so motifs across the end of the period are captures
+  // e.g., something from month 12 -> month 1 -> month 2
+  for (TNGraph::TEdgeI it = static_graph_->BegEI(); it < static_graph_->EndEI(); it++) {
+    int src = it.GetSrcNId();
+    int dst = it.GetDstNId();
+    int tim = temporal_data_[src](dst).GetVal(tim); // hopefully this does what i want?
+    if (tim > delta) { continue; }
+    temporal_data_[src](dst).Add(tim + period);
+  }
+}
+
 void TempMotifCounter::GetAllStaticTriangles(TIntV& Us, TIntV& Vs, TIntV& Ws) {
   Us.Clr();
   Vs.Clr();
@@ -116,7 +128,7 @@ void TempMotifCounter::GetAllStaticTriangles(TIntV& Us, TIntV& Vs, TIntV& Ws) {
 }
 
 void TempMotifCounter::Count3TEdge23Node(double delta, Counter2D& counts) {
-  // This is imply a wrapper function around the counting methods to produce
+  // This is simply a wrapper function around the counting methods to produce
   // counts in the same way that they were represented in the paper.  This makes
   // it easy to reproduce results and allow SNAP users to make the same
   // measurements on their temporal network data.
