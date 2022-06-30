@@ -164,6 +164,22 @@ class TempMotifCounter {
   // counts such that counts(i, j) corresponds to motif M_{i,j}.
   void Count3TEdge23Node(double delta, Counter2D& counts);  
 
+  // CM
+  // Returns the motif_timestamps data structure
+  TVec< TIntV > GetMotifTimestamps();
+
+
+// CM
+// This gives the incremental counts for all 3-edge temporal motifs 
+// incremental as in the amount of those motifs that start at some given 
+// timestamp t1
+// @param delta: the time window within which to look for the motifs
+// @param timestamps: (sorted) vector of all (unique) timestamps in the graph
+// @param counts: the output goes to a 3D matrix, first 2 dimensions as described
+// in the Paranjape, et al paper, and the 3rd dimension being the timestamp where this
+// motif started
+//void TempMotifCounter::Count3TEdgeWithIncCounts(double delta, const TIntV& timestamps, Counter3D& counts);
+
  private:
   // Get all triangles in the static graph, (Us(i), Vs(i), Ws(i)) is the ith
   // triangle.
@@ -192,6 +208,13 @@ class TempMotifCounter {
   // Core data structure for storing temporal edges.  temporal_data_[u](v) is a
   // list of temporal edges along the static edge (u, v).
   TVec< THash<TInt, TIntV> > temporal_data_;
+
+  // CM
+  // Use Hashmap connecting motifs to time periods when they happen
+  // key: motif
+  // value: vector of time periods when they occur (starting)
+  // there are 36 motifs that we track
+  TVec< TIntV > motif_timestamps;
 };
 
 // This class exhaustively counts all size^3 three-edge temporal motifs in an
@@ -207,10 +230,22 @@ class ThreeTEdgeMotifCounter {
   // of the ordered edges e, f, g.
   void Count(const TIntV& event_string, const TIntV& timestamps,
              double delta, Counter3D& counts);
+  // CM 
+  // Same as Count above, but it also updates motif_timestamps appropriately
+  void CountWithTimestamps(const TIntV& event_string, const TIntV& timestamps,
+             double delta, Counter3D& counts, TVec< TIntV>& motifs_timestamps);
 
  private:
   void IncrementCounts(int event);
   void DecrementCounts(int event);
+  // CM wrote following method 
+  // it will change bool changed to True if the counts3_ was updated here, then I 
+  // can hopefully see what starting timestamp it was updated at 
+  bool IncrementCountsFlag(int event);
+  // CM 
+  // Will update the motif_timestamps as new motifs are detected
+  // (at least for the 2 node motifs)
+  void IncrementCountsAndTImestamps(int event, TVec< TIntV >& motifs_timestamps, int starting_t);
   Counter1D counts1_;
   Counter2D counts2_;
   Counter3D counts3_;

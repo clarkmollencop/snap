@@ -30,10 +30,13 @@ int main(int argc, char* argv[]) {
 
   // Count all 2-node and 3-node temporal motifs with 3 temporal edges
   TempMotifCounter tmc(temporal_graph_filename);
-  tmc.DuplicateEdges(4, 12);
+  //tmc.DuplicateEdges(4, 12);
 
   Counter2D counts;
-  // add the duplicated edges here maybe
+  
+  // TODO: treat motif_timestamps like counts here
+  // ie have it initialized and stuff in count3tedge23node instead as an
+  // instance var of the tmc class
   
   tmc.Count3TEdge23Node(delta, counts);
   FILE* output_file = fopen(output.CStr(), "wt");
@@ -45,7 +48,17 @@ int main(int argc, char* argv[]) {
     }
     fprintf(output_file, "\n");
   }
-  
+
+  // CM 
+  TVec<TIntV> motif_timestamps = tmc.GetMotifTimestamps();
+  for (int i = 0; i < motif_timestamps.Len(); ++i) {
+    printf("motif number: %i ", i);
+    for (int j = 0; j < motif_timestamps[i].Len(); ++j) {
+      printf("occurence timestamp: %i, ", motif_timestamps[i][j]);
+    }
+    printf("\n");
+  }
+
   Catch
   printf("\nrun time: %s (%s)\n", ExeTm.GetTmStr(),
 	 TSecTm::GetCurTm().GetTmStr().CStr());
