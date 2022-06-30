@@ -644,12 +644,7 @@ void ThreeTEdgeMotifCounter::CountWithTimestamps(const TIntV& event_string, cons
 // Generic three temporal edge motif counter
 void ThreeTEdgeMotifCounter::Count(const TIntV& event_string, const TIntV& timestamps,
                                    double delta, Counter3D& counts) {
-  // CM
-  printf("Count called\n");
-  
-
-
-  // Initialize everything to empty
+    // Initialize everything to empty
   counts1_ = Counter1D(size_);
   counts2_ = Counter2D(size_, size_);
   counts3_ = Counter3D(size_, size_, size_);
