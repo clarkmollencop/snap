@@ -149,19 +149,13 @@ void TempMotifCounter::GetAllStaticTriangles(TIntV& Us, TIntV& Vs, TIntV& Ws) {
 //   int last_timestamp = timestamps[timestamps.Len() - 1];
 //   counts = Counter3D(6, 6, last_timestamp);
   
-//   Counter3D edge_counts;
-//   // TODO: do what they did in this section but for all timestamps
-// }
-
 void TempMotifCounter::Count3TEdge23Node(double delta, Counter2D& counts) {
   // This is simply a wrapper function around the counting methods to produce
   // counts in the same way that they were represented in the paper.  This makes
   // it easy to reproduce results and allow SNAP users to make the same
   // measurements on their temporal network data.
   counts = Counter2D(6, 6);
-  // CM
-  // only printing twice for more than 2 motifs counted
-  printf("Count3TEdge23Node called\n");
+
   Counter2D edge_counts;
   TVec <TIntV> two_node_times;
   Count3TEdge2Node(delta, edge_counts);
@@ -170,32 +164,32 @@ void TempMotifCounter::Count3TEdge23Node(double delta, Counter2D& counts) {
   counts(5, 0) = edge_counts(1, 0);
   counts(5, 1) = edge_counts(1, 1);
 
-  // Counter3D pre_counts, pos_counts, mid_counts;
-  // Count3TEdge3NodeStars(delta, pre_counts, pos_counts, mid_counts);
-  // counts(0, 0) = mid_counts(1, 1, 1);
-  // counts(0, 1) = mid_counts(1, 1, 0);
-  // counts(0, 4) = pos_counts(1, 1, 0);
-  // counts(0, 5) = pos_counts(1, 1, 1);
-  // counts(1, 0) = mid_counts(1, 0, 1);
-  // counts(1, 1) = mid_counts(1, 0, 0);
-  // counts(1, 4) = pos_counts(1, 0, 0);
-  // counts(1, 5) = pos_counts(1, 0, 1);
-  // counts(2, 0) = mid_counts(0, 1, 0);
-  // counts(2, 1) = mid_counts(0, 1, 1);
-  // counts(2, 2) = pos_counts(0, 1, 0);
-  // counts(2, 3) = pos_counts(0, 1, 1);
-  // counts(3, 0) = mid_counts(0, 0, 0);
-  // counts(3, 1) = mid_counts(0, 0, 1);
-  // counts(3, 2) = pos_counts(0, 0, 0);
-  // counts(3, 3) = pos_counts(0, 0, 1);
-  // counts(4, 2) = pre_counts(0, 1, 0);
-  // counts(4, 3) = pre_counts(0, 1, 1);
-  // counts(4, 4) = pre_counts(1, 0, 0);
-  // counts(4, 5) = pre_counts(1, 0, 1);
-  // counts(5, 2) = pre_counts(0, 0, 0);
-  // counts(5, 3) = pre_counts(0, 0, 1);
-  // counts(5, 4) = pre_counts(1, 1, 0);
-  // counts(5, 5) = pre_counts(1, 1, 1);  
+  Counter3D pre_counts, pos_counts, mid_counts;
+  Count3TEdge3NodeStars(delta, pre_counts, pos_counts, mid_counts);
+  counts(0, 0) = mid_counts(1, 1, 1);
+  counts(0, 1) = mid_counts(1, 1, 0);
+  counts(0, 4) = pos_counts(1, 1, 0);
+  counts(0, 5) = pos_counts(1, 1, 1);
+  counts(1, 0) = mid_counts(1, 0, 1);
+  counts(1, 1) = mid_counts(1, 0, 0);
+  counts(1, 4) = pos_counts(1, 0, 0);
+  counts(1, 5) = pos_counts(1, 0, 1);
+  counts(2, 0) = mid_counts(0, 1, 0);
+  counts(2, 1) = mid_counts(0, 1, 1);
+  counts(2, 2) = pos_counts(0, 1, 0);
+  counts(2, 3) = pos_counts(0, 1, 1);
+  counts(3, 0) = mid_counts(0, 0, 0);
+  counts(3, 1) = mid_counts(0, 0, 1);
+  counts(3, 2) = pos_counts(0, 0, 0);
+  counts(3, 3) = pos_counts(0, 0, 1);
+  counts(4, 2) = pre_counts(0, 1, 0);
+  counts(4, 3) = pre_counts(0, 1, 1);
+  counts(4, 4) = pre_counts(1, 0, 0);
+  counts(4, 5) = pre_counts(1, 0, 1);
+  counts(5, 2) = pre_counts(0, 0, 0);
+  counts(5, 3) = pre_counts(0, 0, 1);
+  counts(5, 4) = pre_counts(1, 1, 0);
+  counts(5, 5) = pre_counts(1, 1, 1);  
 
   // Counter3D triad_counts;
   // Count3TEdgeTriads(delta, triad_counts);
@@ -212,8 +206,6 @@ void TempMotifCounter::Count3TEdge23Node(double delta, Counter2D& counts) {
 ///////////////////////////////////////////////////////////////////////////////
 // Two-node (static edge) counting methods
 void TempMotifCounter::Count3TEdge2Node(double delta, Counter2D& counts) {
-  // CM
-  printf("Count3TEdge2Node(2 arg) called\n");
   // Get a vector of undirected edges (so we can use openmp parallel for over it)
   TVec<TIntPair> undir_edges;
   for (TNGraph::TEdgeI it = static_graph_->BegEI(); it < static_graph_->EndEI(); it++) {
@@ -225,13 +217,11 @@ void TempMotifCounter::Count3TEdge2Node(double delta, Counter2D& counts) {
     }
   }
   counts = Counter2D(2, 2);
-  printf("length of undir edges: %i\n", undir_edges.Len());
   #pragma omp parallel for schedule(dynamic)
   for (int i = 0; i < undir_edges.Len(); i++) {
     TIntPair edge = undir_edges[i];
     Counter3D local;
     // CM
-    printf("current edge: src: %i, dst: %i\n", edge.Key, edge.Dat);
     Count3TEdge2Node(edge.Key, edge.Dat, delta, local);
     #pragma omp critical
     {
@@ -245,8 +235,6 @@ void TempMotifCounter::Count3TEdge2Node(double delta, Counter2D& counts) {
 
 void TempMotifCounter::Count3TEdge2Node(int u, int v, double delta,
                                         Counter3D& counts) {
-  // CM
-  printf("Count3TEdge2Node(4 arg) called\n");
   // Sort event list by time
   TVec<TIntPair> combined;
   AddStarEdges(combined, u, v, 0);
@@ -266,7 +254,6 @@ void TempMotifCounter::Count3TEdge2Node(int u, int v, double delta,
     // CM tells you what exactly the timestamp is
     timestamps[k] = combined[k].Key;
   }
-  printf("combined length: %i\n", combined.Len());
   // create my own Count method that also updates motif_timestamps
   counter.CountWithTimestamps(in_out, timestamps, delta, counts, motif_timestamps);
   // counter.Count(in_out, timestamps, delta, counts);
@@ -277,7 +264,6 @@ void TempMotifCounter::Count3TEdge2Node(int u, int v, double delta,
 void TempMotifCounter::AddStarEdges(TVec<TIntPair>& combined, int u, int v,
                                     int key) {
   // CM 
-  printf("AddStarEdges called\n");
   if (HasEdges(u, v)) {
     // CM 
     // here is the timestamp!
@@ -625,8 +611,6 @@ void TempMotifCounter::Count3TEdgeTriads(double delta, Counter3D& counts) {
 // same as Count below, but increments motif_timestamps
 void ThreeTEdgeMotifCounter::CountWithTimestamps(const TIntV& event_string, const TIntV& timestamps,
              double delta, Counter3D& counts, TVec< TIntV >& motifs_timestamps) {
-  // CM
-  printf("Count called\n");
   
   // Initialize everything to empty
   counts1_ = Counter1D(size_);
