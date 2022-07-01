@@ -830,6 +830,42 @@ void ThreeTEdgeStarCounter::ProcessCurrent(const StarEdgeData& event) {
   for (int i = 0; i < 2; i++) { mid_sum_(dir, i) += pos_nodes_(i, nbr); }
 }
 
+// CM
+// ProcessCurrent method that also updates motif timestamps
+void ThreeTEdgeStarCounter::ProcessCurrentTimestamp(const StarEdgeData& event, TVec<TIntV>& motif_timestamps) {
+  printf("hi");
+  int nbr = event.nbr;
+  int dir = event.dir;
+  // Decrement middle sum
+  for (int i = 0; i < 2; i++) { mid_sum_(i, dir) -= pre_nodes_(i, nbr); }
+  // Update counts
+  for (int i = 0; i < 2; i++) {
+    for (int j = 0; j < 2; j++) {
+      int tempPre = pre_counts_(i, j, dir);
+      int tempPos = pre_counts_(dir, i, j);
+      int tempMid = mid_counts_(i, dir, j);
+      pre_counts_(i, j, dir) += pre_sum_(i, j);
+      pos_counts_(dir, i, j) += pos_sum_(i, j);
+      mid_counts_(i, dir, j) += mid_sum_(i, j);
+      int tempPre1 = pre_counts_(i, j, dir);
+      int tempPos1 = pre_counts_(dir, i, j);
+      int tempMid1 = mid_counts_(i, dir, j);
+      // check if the counts were updated and update motif_timestamps accordingly
+      if (tempPre1 > tempPre) {
+        // check which pre motif it is and update the counter
+      }
+      if (tempPos1 > tempPos) {
+        // check which post motif it is and update the counter
+      }
+      if (tempMid1 > tempMid) {
+        //check which mid motif it is and update the counter
+      }
+    }
+  }
+  // Increment middle sum
+  for (int i = 0; i < 2; i++) { mid_sum_(dir, i) += pos_nodes_(i, nbr); }
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // Methods for the main sub-routine in the fast triangle counting algorithm.
 void ThreeTEdgeTriadCounter::InitializeCounters() {
@@ -890,6 +926,63 @@ void ThreeTEdgeTriadCounter::PushPos(const TriadEdgeData& event) {
 }
 
 void ThreeTEdgeTriadCounter::ProcessCurrent(const TriadEdgeData& event) {
+  int nbr = event.nbr;
+  int dir = event.dir;
+  int u_or_v = event.u_or_v;  
+  // Adjust middle sums
+  if (!IsEdgeNode(nbr)) {
+    for (int i = 0; i < 2; i++) {
+      mid_sum_(1 - u_or_v, i, dir) -= pre_nodes_(i, 1 - u_or_v, nbr);
+      mid_sum_(u_or_v, dir, i) += pos_nodes_(i, 1 - u_or_v, nbr);
+    }
+  }
+  // Update counts
+  if (IsEdgeNode(nbr)) {
+    // Determine if the event edge is u --> v or v --> u
+    int u_to_v = 0;
+    if (((nbr == node_u_) && dir == 0) || ((nbr == node_v_) && dir == 1)) {
+      u_to_v = 1;
+    }
+    // i --> j, k --> j, i --> k    
+    triad_counts_(0, 0, 0) += mid_sum_(u_to_v,     0, 0)
+                           +  pos_sum_(u_to_v,     0, 1)
+                           +  pre_sum_(1 - u_to_v, 1, 1);
+    // i --> j, k --> i, j --> k
+    triad_counts_(1, 0, 0) += mid_sum_(u_to_v,     1, 0)
+                           +  pos_sum_(1 - u_to_v, 0, 1)
+                           +  pre_sum_(1 - u_to_v, 0, 1);
+    // i --> j, j --> k, i --> k
+    triad_counts_(0, 1, 0) += mid_sum_(1 - u_to_v, 0, 0)
+                           +  pos_sum_(u_to_v,     1, 1)
+                           +  pre_sum_(1 - u_to_v, 1, 0);
+    // i --> j, i --> k, j --> k
+    triad_counts_(1, 1, 0) += mid_sum_(1 - u_to_v, 1, 0)
+                           +  pos_sum_(1 - u_to_v, 1, 1)
+                           +  pre_sum_(1 - u_to_v, 0, 0);
+    // i --> j, k --> j, k --> i
+    triad_counts_(0, 0, 1) += mid_sum_(u_to_v,     0, 1)
+                           +  pos_sum_(u_to_v,     0, 0)
+                           +  pre_sum_(u_to_v,     1, 1);
+    // i --> j, k --> i, k --> j
+    triad_counts_(1, 0, 1) += mid_sum_(u_to_v,     1, 1)
+                           +  pos_sum_(1 - u_to_v, 0, 0)
+                           +  pre_sum_(u_to_v,     0, 1);
+    // i --> j, j --> k, k --> i
+    triad_counts_(0, 1, 1) += mid_sum_(1 - u_to_v, 0, 1)
+                           +  pos_sum_(u_to_v,     1, 0)
+                           +  pre_sum_(u_to_v,     1, 0);
+    // i --> j, i --> k, k --> j
+    triad_counts_(1, 1, 1) += mid_sum_(1 - u_to_v, 1, 1)
+                           +  pos_sum_(1 - u_to_v, 1, 0)
+                           +  pre_sum_(u_to_v,     0, 0);
+  }
+}
+
+// CM
+// ProcessCurrent method that also updates timestamps
+// TODO: change it from what it currently is
+void ThreeTEdgeTriadCounter::ProcessCurrentTimestamp(const TriadEdgeData& event, TVec<TIntV>& motif_timestamps) {
+  printf("h");
   int nbr = event.nbr;
   int dir = event.dir;
   int u_or_v = event.u_or_v;  

@@ -269,6 +269,7 @@ class StarTriad3TEdgeCounter {
   virtual void PushPre(const EdgeData& event) = 0;
   virtual void PushPos(const EdgeData& event) = 0;
   virtual void ProcessCurrent(const EdgeData& event) = 0;
+  virtual void ProcessCurrentTimestamp(const EdgeData& event, TVec<TIntV>& motif_timestamps) = 0;
 };
 
 // Class for counting star motifs with a given center node.
@@ -291,6 +292,7 @@ class ThreeTEdgeStarCounter : public StarTriad3TEdgeCounter<StarEdgeData> {
   void PushPre(const StarEdgeData& event);
   void PushPos(const StarEdgeData& event);
   void ProcessCurrent(const StarEdgeData& event);
+  void ProcessCurrentTimestamp(const StarEdgeData& event, TVec<TIntV>& motif_timestamps);
   
  private:
   int max_nodes_;
@@ -325,6 +327,7 @@ class ThreeTEdgeTriadCounter : public StarTriad3TEdgeCounter<TriadEdgeData> {
   void PushPre(const TriadEdgeData& event);
   void PushPos(const TriadEdgeData& event);
   void ProcessCurrent(const TriadEdgeData& event);
+  void ProcessCurrentTimestamp(const TriadEdgeData& event, TVec<TIntV>& motif_timestamps);
   bool IsEdgeNode(int nbr) { return nbr == node_u_ || nbr == node_v_; }
 
  private:
