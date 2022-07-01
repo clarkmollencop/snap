@@ -378,7 +378,10 @@ void TempMotifCounter::Count3TEdge3NodeStars(double delta, Counter3D& pre_counts
     
     ThreeTEdgeStarCounter tesc(nbr_index);
     // dirs: outgoing --> 0, incoming --> 1
-    tesc.Count(ordered_events, timestamps, delta);
+    // tesc.Count(ordered_events, timestamps, delta);
+    // CM 
+    // this now includes motif_timestamps being passed
+    tesc.Count(ordered_events, timestamps, delta, motif_timestamps);
     #pragma omp critical
     { // Update counts
       for (int dir1 = 0; dir1 < 2; ++dir1) {
@@ -396,6 +399,7 @@ void TempMotifCounter::Count3TEdge3NodeStars(double delta, Counter3D& pre_counts
     for (int nbr_id = 0; nbr_id < nbrs.Len(); nbr_id++) {
       int nbr = nbrs[nbr_id];
       Counter3D edge_counts;
+      // use the new count here to subtract those that are double counted? 
       Count3TEdge2Node(center, nbr, delta, edge_counts);
       #pragma omp critical
       {
@@ -594,7 +598,7 @@ void TempMotifCounter::Count3TEdgeTriads(double delta, Counter3D& counts) {
     
     // Get the counts and update the counter
     ThreeTEdgeTriadCounter tetc(nbr_index, 0, 1);
-    tetc.Count(sorted_events, timestamps, delta);
+    tetc.Count(sorted_events, timestamps, delta, motif_timestamps);
     #pragma omp critical
     {
       for (int dir1 = 0; dir1 < 2; dir1++) {
@@ -644,7 +648,7 @@ void ThreeTEdgeMotifCounter::CountWithTimestamps(const TIntV& event_string, cons
 // Generic three temporal edge motif counter
 void ThreeTEdgeMotifCounter::Count(const TIntV& event_string, const TIntV& timestamps,
                                    double delta, Counter3D& counts) {
-    // Initialize everything to empty
+  // Initialize everything to empty
   counts1_ = Counter1D(size_);
   counts2_ = Counter2D(size_, size_);
   counts3_ = Counter3D(size_, size_, size_);
@@ -738,9 +742,10 @@ void ThreeTEdgeMotifCounter::DecrementCounts(int event) {
 
 ///////////////////////////////////////////////////////////////////////////////
 // Generic three temporal edge, three node star and triad counter.
+// CM added the parameter motif_timestamps so they get updated here
 template <typename EdgeData>
 void StarTriad3TEdgeCounter<EdgeData>::Count(const TVec<EdgeData>& events,
-                                             const TIntV& timestamps, double delta) {
+                                             const TIntV& timestamps, double delta, TVec<TIntV>& motif_timestamps) {
   InitializeCounters();
   if (events.Len() != timestamps.Len()) {
     TExcept::Throw("Number of events must match number of timestamps.");

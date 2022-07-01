@@ -258,7 +258,8 @@ template <typename EdgeData>
 class StarTriad3TEdgeCounter {
  public:
   StarTriad3TEdgeCounter() {}
-  void Count(const TVec<EdgeData>& events, const TIntV& timestamps, double delta);
+  // CM added parameter motif_timestamps to capture when the motifs are occurring
+  void Count(const TVec<EdgeData>& events, const TIntV& timestamps, double delta, TVec<TIntV>& motif_timestamps);
   
  protected:
   // These methods depend on the motif type (star or triad).
