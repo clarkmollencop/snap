@@ -767,7 +767,9 @@ void StarTriad3TEdgeCounter<EdgeData>::Count(const TVec<EdgeData>& events,
     }
     // Move current event off post-window
     PopPos(events[j]);
-    ProcessCurrent(events[j]);
+    // ProcessCurrent(events[j]);
+    // CM
+    ProcessCurrentTimestamp(events[j], motif_timestamps, timestamps[start]);
     PushPre(events[j]);
   }
 }
@@ -832,8 +834,7 @@ void ThreeTEdgeStarCounter::ProcessCurrent(const StarEdgeData& event) {
 
 // CM
 // ProcessCurrent method that also updates motif timestamps
-void ThreeTEdgeStarCounter::ProcessCurrentTimestamp(const StarEdgeData& event, TVec<TIntV>& motif_timestamps) {
-  printf("hi");
+void ThreeTEdgeStarCounter::ProcessCurrentTimestamp(const StarEdgeData& event, TVec<TIntV>& motif_timestamps, int starting_t) {
   int nbr = event.nbr;
   int dir = event.dir;
   // Decrement middle sum
@@ -853,6 +854,14 @@ void ThreeTEdgeStarCounter::ProcessCurrentTimestamp(const StarEdgeData& event, T
       // check if the counts were updated and update motif_timestamps accordingly
       if (tempPre1 > tempPre) {
         // check which pre motif it is and update the counter
+        if ( (i == 0 && j == 0) && (dir == 0)) { motif_timestamps[32].Add(starting_t); }
+        else if ( (i == 0 && j == 0) && (dir == 1) ) { motif_timestamps[33].Add(starting_t); }
+        else if ( (i == 0 && j == 1) && (dir == 0) ) { motif_timestamps[26].Add(starting_t); }
+        else if ( (i == 0 && j == 1) && (dir == 1) ) { motif_timestamps[27].Add(starting_t); }
+        else if ( (i == 1 && j == 0) && (dir == 0) ) { motif_timestamps[28].Add(starting_t); }
+        else if ( (i == 1 && j == 0) && (dir == 1) ) { motif_timestamps[29].Add(starting_t); }
+        else if ( (i == 1 && j == 1) && (dir == 0) ) { motif_timestamps[34].Add(starting_t); }
+        else if ( (i == 1 && j == 1) && (dir == 1) ) { motif_timestamps[35].Add(starting_t); }
       }
       if (tempPos1 > tempPos) {
         // check which post motif it is and update the counter
@@ -981,8 +990,7 @@ void ThreeTEdgeTriadCounter::ProcessCurrent(const TriadEdgeData& event) {
 // CM
 // ProcessCurrent method that also updates timestamps
 // TODO: change it from what it currently is
-void ThreeTEdgeTriadCounter::ProcessCurrentTimestamp(const TriadEdgeData& event, TVec<TIntV>& motif_timestamps) {
-  printf("h");
+void ThreeTEdgeTriadCounter::ProcessCurrentTimestamp(const TriadEdgeData& event, TVec<TIntV>& motif_timestamps, int starting_t) {
   int nbr = event.nbr;
   int dir = event.dir;
   int u_or_v = event.u_or_v;  

@@ -52,9 +52,9 @@ int main(int argc, char* argv[]) {
   // CM 
   TVec<TIntV> motif_timestamps = tmc.GetMotifTimestamps();
   for (int i = 0; i < motif_timestamps.Len(); ++i) {
-    printf("motif number: %i ", i);
+    printf("motif %i: ", i);
     for (int j = 0; j < motif_timestamps[i].Len(); ++j) {
-      printf("occurence timestamp: %i, ", motif_timestamps[i][j]);
+      printf("%i, ", motif_timestamps[i][j]);
     }
     printf("\n");
   }
