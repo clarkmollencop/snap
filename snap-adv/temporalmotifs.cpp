@@ -156,13 +156,13 @@ void TempMotifCounter::Count3TEdge23Node(double delta, Counter2D& counts) {
   // measurements on their temporal network data.
   counts = Counter2D(6, 6);
 
-  Counter2D edge_counts;
-  TVec <TIntV> two_node_times;
-  Count3TEdge2Node(delta, edge_counts);
-  counts(4, 0) = edge_counts(0, 0);
-  counts(4, 1) = edge_counts(0, 1);
-  counts(5, 0) = edge_counts(1, 0);
-  counts(5, 1) = edge_counts(1, 1);
+  // Counter2D edge_counts;
+  // TVec <TIntV> two_node_times;
+  // Count3TEdge2Node(delta, edge_counts);
+  // counts(4, 0) = edge_counts(0, 0);
+  // counts(4, 1) = edge_counts(0, 1);
+  // counts(5, 0) = edge_counts(1, 0);
+  // counts(5, 1) = edge_counts(1, 1);
 
   Counter3D pre_counts, pos_counts, mid_counts;
   Count3TEdge3NodeStars(delta, pre_counts, pos_counts, mid_counts);
@@ -853,6 +853,7 @@ void ThreeTEdgeStarCounter::ProcessCurrentTimestamp(const StarEdgeData& event, T
       int tempMid1 = mid_counts_(i, dir, j);
       // check if the counts were updated and update motif_timestamps accordingly
       if (tempPre1 > tempPre) {
+        printf("pre motif inc. i: %i j: %i dir: %i\n", i, j, dir);
         // check which pre motif it is and update the counter
         if ( (i == 0 && j == 0) && (dir == 0)) { motif_timestamps[32].Add(starting_t); }
         else if ( (i == 0 && j == 0) && (dir == 1) ) { motif_timestamps[33].Add(starting_t); }
@@ -864,10 +865,28 @@ void ThreeTEdgeStarCounter::ProcessCurrentTimestamp(const StarEdgeData& event, T
         else if ( (i == 1 && j == 1) && (dir == 1) ) { motif_timestamps[35].Add(starting_t); }
       }
       if (tempPos1 > tempPos) {
+        printf("pos motif inc. i: %i j: %i dir: %i\n", i, j, dir);
         // check which post motif it is and update the counter
+        if ( (i == 0 && j == 0) && (dir == 0)) { motif_timestamps[20].Add(starting_t); }
+        else if ( (i == 0 && j == 0) && (dir == 1) ) { motif_timestamps[21].Add(starting_t); }
+        else if ( (i == 0 && j == 1) && (dir == 0) ) { motif_timestamps[14].Add(starting_t); }
+        else if ( (i == 0 && j == 1) && (dir == 1) ) { motif_timestamps[15].Add(starting_t); }
+        else if ( (i == 1 && j == 0) && (dir == 0) ) { motif_timestamps[10].Add(starting_t); }
+        else if ( (i == 1 && j == 0) && (dir == 1) ) { motif_timestamps[11].Add(starting_t); }
+        else if ( (i == 1 && j == 1) && (dir == 0) ) { motif_timestamps[4].Add(starting_t); }
+        else if ( (i == 1 && j == 1) && (dir == 1) ) { motif_timestamps[5].Add(starting_t); }
       }
       if (tempMid1 > tempMid) {
+        printf("mid motif inc. i: %i j: %i dir: %i\n", i, j, dir);
         //check which mid motif it is and update the counter
+        if ( (i == 0 && j == 0) && (dir == 0)) { motif_timestamps[18].Add(starting_t); }
+        else if ( (i == 0 && j == 0) && (dir == 1) ) { motif_timestamps[19].Add(starting_t); }
+        else if ( (i == 0 && j == 1) && (dir == 0) ) { motif_timestamps[12].Add(starting_t); }
+        else if ( (i == 0 && j == 1) && (dir == 1) ) { motif_timestamps[13].Add(starting_t); }
+        else if ( (i == 1 && j == 0) && (dir == 0) ) { motif_timestamps[7].Add(starting_t); }
+        else if ( (i == 1 && j == 0) && (dir == 1) ) { motif_timestamps[6].Add(starting_t); }
+        else if ( (i == 1 && j == 1) && (dir == 0) ) { motif_timestamps[2].Add(starting_t); }
+        else if ( (i == 1 && j == 1) && (dir == 1) ) { motif_timestamps[0].Add(starting_t); }
       }
     }
   }
